@@ -10,18 +10,28 @@ Marketplace de plugins de Claude Code del equipo Kukul para proyectos Flutter.
 
 ## Instalación
 
-Desde Claude Code:
+Desde la terminal:
+
+```bash
+claude plugin marketplace add valentinKukulSoft/kukul-flutter-tools
+claude plugin install kukul-flutter@kukul-flutter-tools
+```
+
+O desde una sesión de Claude Code:
 
 ```
 /plugin marketplace add valentinKukulSoft/kukul-flutter-tools
 /plugin install kukul-flutter@kukul-flutter-tools
 ```
 
-Para recibir cambios nuevos:
+Para recibir cambios nuevos (reinicia Claude Code para aplicarlos):
 
+```bash
+claude plugin marketplace update kukul-flutter-tools
+claude plugin update kukul-flutter@kukul-flutter-tools
 ```
-/plugin marketplace update kukul-flutter-tools
-```
+
+En sesión: `/plugin marketplace update kukul-flutter-tools`.
 
 ## Skills
 
