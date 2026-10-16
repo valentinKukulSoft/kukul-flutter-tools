@@ -1,0 +1,16 @@
+{
+  "name": "kukul-flutter-tools",
+  "owner": {
+    "name": "Kukul"
+  },
+  "metadata": {
+    "description": "Skills de Claude Code del equipo Kukul para proyectos Flutter"
+  },
+  "plugins": [
+    {
+      "name": "kukul-flutter",
+      "source": "./plugins/kukul-flutter",
+      "description": "Skills para auditar proyectos Flutter y actualizar Flutter y sus dependencias por fases"
+    }
+  ]
+}
