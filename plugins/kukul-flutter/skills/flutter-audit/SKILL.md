@@ -17,6 +17,20 @@ Produce un documento `docs/AUDITORIA_<YYYY-MM>.md` con hallazgos **verificados c
 6. **Primero lee, luego cambia.** La auditoría es read-only salvo los *quick-wins* de la Fase 3, y esos solo si el usuario lo autoriza.
 7. Comprueba si el proyecto usa FVM (`.fvmrc`/`.fvm/`): en ese caso prefija `fvm flutter` / `fvm dart`.
 8. Respeta el idioma del proyecto (docs, CLAUDE.md). Si ya existe un `docs/AUDITORIA_*.md`, **verifica su estado actual** en vez de rehacerlo (ver Fase 6).
+9. **Docs con Context7**: antes de afirmar que una API está deprecada, que un patrón no es el recomendado o que un paquete tiene una configuración insegura, compruébalo en la documentación de la versión que usa el proyecto. Si Context7 está instalado, úsalo; si no, propón instalarlo (ver sección siguiente).
+
+## Documentación con Context7
+
+Para consultar docs de Flutter, Dart y paquetes usa **Context7** (MCP), que sirve documentación actualizada por versión en vez de depender de la memoria del modelo.
+
+1. **Detecta si está disponible**: comprueba si tienes las herramientas `resolve-library-id` y `query-docs` del servidor `context7` (p. ej. `mcp__context7__*` o `mcp__plugin_context7_context7__*`). Si el servidor aparece pero pide autenticación, díselo al usuario (`/mcp`).
+2. **Si está disponible, úsalo**: `resolve-library-id` con el nombre del paquete → elige el ID `/org/proyecto` (versionado si existe para la versión del proyecto) → `query-docs` con una pregunta concreta por tema (una API, una migración, una configuración). Cita en el documento la fuente consultada.
+3. **Si no está instalado, propón instalarlo** al empezar la auditoría, sin bloquear:
+   ```bash
+   claude mcp add --transport http context7 https://mcp.context7.com/mcp
+   ```
+   (o desde una sesión: `/plugin install context7@claude-plugins-official`). Requiere reiniciar Claude Code. Si el usuario no quiere, sigue con las fuentes oficiales (pub.dev changelog, `docs.flutter.dev`, `dart.dev`, repos de GitHub) y anótalo en el documento.
+4. Context7 complementa, no sustituye: **las versiones reales salen de `pub outdated`/releases oficiales** y el impacto se confirma siempre con `grep` en el código del proyecto.
 
 ## Escala de prioridad
 
@@ -96,6 +110,7 @@ Ejecuta los greps, registra los conteos en la tabla de métricas y **abre los ar
 - Cuando destrabes la compilación, **corre la suite completa**: pueden aparecer fallos ocultos; investígalos (¿bug de código o test desactualizado? ¿decisión de producto?).
 
 ### 6. Dependencias e integraciones
+- Para los paquetes clave (state management, router, HTTP, auth, pagos, almacenamiento seguro) consulta en Context7 las APIs deprecadas y buenas prácticas de **la versión instalada** y contrasta con el uso real en `lib/`.
 - `pubspec.yaml`: paquetes pre-1.0 con caret (`^0.x`) → fijar versión exacta; comentarios de versiones alternas (`#^12.2.1`) = upgrades a medias; deps abandonadas; `dependency_overrides`; dev-deps duplicadas.
 - SDKs nativos con licencia/tracking en background, integraciones **comentadas o con feature flag** (verifica si siguen comentadas: el estado cambia).
 - Versiones de AGP/Gradle/Kotlin/Xcode/min SDK, targetSdk vs requisitos actuales de las tiendas.
