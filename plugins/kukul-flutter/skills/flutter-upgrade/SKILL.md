@@ -19,6 +19,20 @@ Actualiza Flutter y luego los paquetes, con **evidencia** de qué rompe en *este
 7. Si el proyecto usa FVM (`.fvmrc`), prefija `fvm flutter` / `fvm dart` en todo.
 8. Respeta el idioma y las reglas del proyecto (CLAUDE.md: comentarios mínimos, no formatear carpetas completas, convenciones de commits).
 9. Si algo huele a decisión de producto o de riesgo (migrar toolchain, perder datos), **pregunta** con una recomendación; no decidas solo.
+10. **Docs con Context7**: si está instalado, úsalo para leer changelogs, guías de migración y APIs; si no, propón instalarlo (ver sección siguiente).
+
+## Documentación con Context7
+
+Para consultar docs de Flutter, Dart y paquetes usa **Context7** (MCP), que sirve documentación actualizada por versión en vez de depender de la memoria del modelo.
+
+1. **Detecta si está disponible**: comprueba si tienes las herramientas `resolve-library-id` y `query-docs` del servidor `context7` (p. ej. `mcp__context7__*` o `mcp__plugin_context7_context7__*`). Si el servidor aparece pero pide autenticación, díselo al usuario (`/mcp`).
+2. **Si está disponible, úsalo**: `resolve-library-id` con el nombre del paquete → elige el ID `/org/proyecto` (versionado si existe para la versión del proyecto) → `query-docs` con una pregunta concreta por tema (una API, una migración, una configuración). Cita en el documento la fuente consultada.
+3. **Si no está instalado, propón instalarlo** antes de la fase de investigación, sin bloquear:
+   ```bash
+   claude mcp add --transport http context7 https://mcp.context7.com/mcp
+   ```
+   (o desde una sesión: `/plugin install context7@claude-plugins-official`). Requiere reiniciar Claude Code. Si el usuario no quiere, sigue con las fuentes oficiales (pub.dev changelog, `docs.flutter.dev`, `dart.dev`, repos de GitHub) y anótalo en el documento.
+4. Context7 complementa, no sustituye: **las versiones reales salen de `pub outdated`/releases oficiales** y el impacto se confirma siempre con `grep` en el código del proyecto.
 
 ## Fase 0 — Contexto y línea base
 
@@ -38,7 +52,7 @@ Actualiza Flutter y luego los paquetes, con **evidencia** de qué rompe en *este
 ## Fase 1 — Investigación de breaking changes (modo plan)
 
 Para cada paquete con salto **major** (y para el framework):
-- Changelog en pub.dev (`https://pub.dev/packages/<pkg>/changelog`) y `docs.flutter.dev/release/breaking-changes`. Contexto de Flutter: si Context7 está disponible, úsalo para docs de librerías.
+- **Context7 primero** (si está disponible): guía de migración y APIs eliminadas/renombradas de la versión destino de cada paquete y de Flutter/Dart. Contrasta con el changelog en pub.dev (`https://pub.dev/packages/<pkg>/changelog`) y `docs.flutter.dev/release/breaking-changes`.
 - Anota: mínimos nuevos (Flutter/Dart/iOS/Android/AGP/Gradle/Kotlin), APIs eliminadas/renombradas, migraciones de datos (p. ej. secure storage), cambios de plataforma.
 - **Cruza con el código:** `grep` de cada API afectada en `lib/` y `test/` para saber si te toca. Lista archivos y líneas.
 - **Agrupa por dependencias compartidas.** Paquetes que comparten una dependencia (ej. `win32` 5→6 en `package_info_plus`, `device_info_plus`, `file_picker`, `share_plus`, `geolocator`) **no pueden subir por separado**; planéalos como un bloque.
